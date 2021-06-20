@@ -19,6 +19,8 @@ const divide = document.getElementById('divide');
 const multiply = document.getElementById('multiply');
 const equals = document.getElementById('equals');
 
+let errorDialogText = document.getElementById("display");
+
 button0.addEventListener('click', function () { display("0"); setOperand("0") });
 button1.addEventListener('click', function () { display("1"); setOperand("1") });
 button2.addEventListener('click', function () { display("2"); setOperand("2") });
@@ -58,27 +60,26 @@ let operatorCount = 0;
 let operatorPresent = false;
 
 
-    
+
 
 function setOperand(input) {
 
     // set the initial operand
     if (firstTime == true && Number.isInteger(parseInt(input))) {
         operand1 += input;
-        //console.log("Operand 1: " + operand1)
+        setError();
     }
-
 
     // set the initital operator
     if ((input == "+" || input == "-" || input == "/" || input == "x") && firstTime == true) {
         operators[count] = input;
-        //console.log("Operator: " + operators[count]);
+
         firstTime = false;
         count++;
         operatorCount++;
         operatorPresent = true;
+        setError();
     }
-
 
     else if ((input == "+" || input == "-" || input == "/" || input == "x") && firstTime == false) {
         operators[count] = input;
@@ -88,44 +89,44 @@ function setOperand(input) {
 
     else if (operatorCount > 0 && (input != "+" && input != "-" && input != "/" && input != "x") && input != "=" && operand1 != "" && Number.isInteger(parseInt(input))) {
         operand2 += input;
-        //console.log("Operand 2: " + operand2)
+        setError();
+
     }
     else if (operatorPresent == true && operatorCount == 0 && (input != "+" && input != "-" && input != "/" && input != "x") && input != "=" && operand1 != "" && Number.isInteger(parseInt(input))) {
         operand2 += input;
-        //console.log("Operand 2: " + operand2)
-    }
+        setError();
 
+    }
 
     // Operate if user inputs an '=' sign
     if (input == "=") {
-        if(operand1 == "" || operand2 == ""){
+        if (operand1 == "" || operand2 == "") {
             clearAll();
             return;
         }
-        //console.log("Operand 1 Second Round: " + operand1)
-        //console.log("op count-1: " + operators[0] );
+
         result = operate(operand1, operand2, operators[count - 1]);
         operand1 = result;
         displayEquals(result);
+
+        if (result == 0) { // If user tried to divide by zero, clear all
+            clearAll();
+            errorDialogText.innerHTML = "Why would you do that to me? I thought we were friends."
+        }
     }
 
     // Operate if user puts a second operator
-    if ((input == "+" || input == "-" || input == "/" || input == "x") && operand2 != "" && operators[count - 1] != undefined) {// CHANGE BACK TO "2" IF ERRORS!!!!!!
-        console.log("fuck")
-        console.log("operand1::" + operand1)
-        console.log("op coint" + operatorCount)
+    if ((input == "+" || input == "-" || input == "/" || input == "x") && operand2 != "" && operators[count - 1] != undefined) {
         result = operate(operand1, operand2, operators[count - 2]);
         operand1 = result;
 
     }
-
 
 }
 
 function clearAll() {
 
     displayValue = 0;
-
     operand1 = "";
     operand2 = "";
     operators = [];
@@ -135,7 +136,7 @@ function clearAll() {
     display("clear");
     operatorPresent = false;
     operatorCount = 0;
-
+    setError();
 
 }
 
@@ -147,7 +148,11 @@ function reset() {
 
 }
 
+function setError(){
 
+    errorDialogText.innerHTML = "";
+    
+}
 
 function operate(operand1, operand2, operators) {
 
@@ -171,12 +176,14 @@ function operate(operand1, operand2, operators) {
         return (subtract(x, y));
     }
     if (z == "/") {
-        if(x==0 && y ==0){
-            alert("Nice try buddy.")
-            
+        if (y == 0) {
+            errorDialogText.innerHTML = "Why would you do that to me? I thought we were friends."
             return 0;
         }
-        return (division(x, y));
+        else {
+
+            return (division(x, y));
+        }
     }
     if (z == "x") {
 
@@ -191,19 +198,19 @@ function display(inputValue) {
         displayValue = 0;
         inputValue = 0;
     }
-    else if (displayValue == 0 && operand1 !="") {
+    else if (displayValue == 0 && operand1 != "") {
         displayValue += inputValue;
-        
-        
+
+
     }
     else if (displayValue == 0) {
         displayValue = inputValue;
-        
+
     }
     else {
         displayValue += inputValue;
     }
-    //console.log(displayValue);
+
 
     displayContainer.innerText = (displayValue)
 }
@@ -211,7 +218,6 @@ function display(inputValue) {
 function displayEquals(inputValue) {
 
     displayValue = result;
-    //displayValue = displayValue.substring(0, displayValue.length-2);
     displayContainer.innerText = (inputValue)
 
 }

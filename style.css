@@ -31,6 +31,8 @@ body {
     display: flex;
     justify-content:flex-end;
     align-items:flex-end;
+    font-size: 35px;
+    
 
     background-color: whitesmoke;
     border-style: solid;
@@ -53,6 +55,16 @@ body {
     grid-template-rows: 45px 45px 45px 45px 45px;
 }
 
+.errorDialog{
+    background-color: whitesmoke;
+    height: 50px;
+    width: 370px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
 button{
     background-color: #89929721;
     
@@ -72,13 +84,15 @@ button:hover {
 }
 
 .clear{
+
     background-color: rgba(255, 0, 0, 0.377);
+
 }
 .clear:hover{
-    background-color: rgba(255, 0, 0, 0.74) ;
+
+    background-color: rgba(255, 0, 0, 0.74);
+
 }
-
-
 
 .equals{
 
@@ -88,4 +102,9 @@ button:hover {
 .equals:hover{
 
     background-color: rgb(25, 75, 223);
+}
+.operator{
+
+    background-color: #cecece9d;
+
 }
