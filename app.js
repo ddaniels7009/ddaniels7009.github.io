@@ -21,7 +21,7 @@ const equals = document.getElementById('equals');
 
 let errorDialogText = document.getElementById("display");
 
-button0.addEventListener('click', function () { display("0"); setOperand("0") });
+button0.addEventListener('click', function () { setOperand("0");  display("0")});
 button1.addEventListener('click', function () { display("1"); setOperand("1") });
 button2.addEventListener('click', function () { display("2"); setOperand("2") });
 button3.addEventListener('click', function () { display("3"); setOperand("3") });
@@ -61,46 +61,70 @@ let operatorPresent = false;
 
 
 
+display(0);
 
 function setOperand(input) {
 
     // set the initial operand
     if (firstTime == true && Number.isInteger(parseInt(input))) {
         operand1 += input;
-        setError();
+        
     }
 
     // set the initital operator
-    if ((input == "+" || input == "-" || input == "/" || input == "x") && firstTime == true) {
+    if ((input == "+" || input == "-" || input == "/" || input == "x") && firstTime == true && (operand1 != "")) {
+        
         operators[count] = input;
-
         firstTime = false;
         count++;
         operatorCount++;
         operatorPresent = true;
-        setError();
+        
     }
 
-    else if ((input == "+" || input == "-" || input == "/" || input == "x") && firstTime == false) {
+    else if ((input == "+" || input == "-" || input == "/" || input == "x") && firstTime == false && (operand1 != "")) {
+        
         operators[count] = input;
         count++;
         operatorCount++;
+        
+    }
+    else if ((input == "+" || input == "-" || input == "/" || input == "x") && firstTime == false && (operand1 == 0 )) {
+        
+            operators[count] = input;
+            count++;
+            operatorCount++;
+            
     }
 
-    else if (operatorCount > 0 && (input != "+" && input != "-" && input != "/" && input != "x") && input != "=" && operand1 != "" && Number.isInteger(parseInt(input))) {
+    else if (operatorCount > 0 && (input != "+" && input != "-" && input != "/" && input != "x" && input != "=" && operand1 != "") && Number.isInteger(parseInt(input))) {
+        
         operand2 += input;
-        setError();
-
+        
     }
-    else if (operatorPresent == true && operatorCount == 0 && (input != "+" && input != "-" && input != "/" && input != "x") && input != "=" && operand1 != "" && Number.isInteger(parseInt(input))) {
+   
+    else if (((operatorPresent == true) && (operatorCount == 0) && (input != "+") && (input != "-") && (input != "/") && (input != "x") && (input != "="))){ //&& (operand1 != ""))) {
+        
         operand2 += input;
-        setError();
+        
+        
 
-    }
+    } 
+    else if (((operatorPresent == true) && (operatorCount == 1) && (input != "+") && (input != "-") && (input != "/") && (input != "x") && (input != "="))){ //&& (operand1 != ""))) {
+        operand2 += input;
+        
+
+    } 
 
     // Operate if user inputs an '=' sign
     if (input == "=") {
-        if (operand1 == "" || operand2 == "") {
+
+        if(operators[0]==undefined){
+            clearAll();
+            return;
+        }
+
+        else if (operand1 != 0 && (operand1 == "" || operand2 == "")) {
             clearAll();
             return;
         }
@@ -109,11 +133,9 @@ function setOperand(input) {
         operand1 = result;
         displayEquals(result);
 
-        if (result == 0) { // If user tried to divide by zero, clear all
-            clearAll();
-            errorDialogText.innerHTML = "Why would you do that to me? I thought we were friends."
-        }
+        
     }
+   
 
     // Operate if user puts a second operator
     if ((input == "+" || input == "-" || input == "/" || input == "x") && operand2 != "" && operators[count - 1] != undefined) {
@@ -145,6 +167,7 @@ function reset() {
     operatorCount = 0;
     operand2 = "";
     result = 0;
+    
 
 }
 
@@ -193,20 +216,34 @@ function operate(operand1, operand2, operators) {
 
 // Set display value based on user's button presses
 function display(inputValue) {
+ 
+    if((inputValue == " + " || inputValue == " - " ||inputValue == " / " || inputValue == " x ") && (operand1 == "")&& firstTime == true){
+        return 0;
+    }
 
     if (inputValue == "clear") {
         displayValue = 0;
         inputValue = 0;
     }
-    else if (displayValue == 0 && operand1 != "") {
-        displayValue += inputValue;
-
-
-    }
     else if (displayValue == 0) {
         displayValue = inputValue;
 
     }
+    else if (displayValue == 0 && operand1 == 0) {
+        displayValue += inputValue;
+
+    }
+    else if (displayValue == 0 && operand1 != "") {
+        displayValue += inputValue;
+    }
+    
+   
+    
+    // case if operand2 is blank and user input is zero
+    else if(operand2 == "" && inputValue == 0){
+        return;
+    }
+
     else {
         displayValue += inputValue;
     }
