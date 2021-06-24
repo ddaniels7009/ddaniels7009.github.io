@@ -1,292 +1,212 @@
 
-const displayContainer = document.getElementById('screen');
+
+const addButton = document.getElementById("addButton")
 
 
-const button0 = document.getElementById('0');
-const button1 = document.getElementById('1');
-const button2 = document.getElementById('2');
-const button3 = document.getElementById('3');
-const button4 = document.getElementById('4');
-const button5 = document.getElementById('5');
-const button6 = document.getElementById('6');
-const button7 = document.getElementById('7');
-const button8 = document.getElementById('8');
-const button9 = document.getElementById('9');
-const clear = document.getElementById('clear');
-const plus = document.getElementById('sum');
-const minus = document.getElementById('minus');
-const divide = document.getElementById('divide');
-const multiply = document.getElementById('multiply');
-const equals = document.getElementById('equals');
+const editSection = document.getElementById("editSection");
+const bookSection = document.getElementById("books");
 
-let errorDialogText = document.getElementById("display");
+let unreadInput = document.createElement("input");
+let readInput = document.createElement("input");
+let pageInput = document.createElement("input");
+let submitButton = document.createElement("button");
 
-button0.addEventListener('click', function () { setOperand("0");  display("0")});
-button1.addEventListener('click', function () { display("1"); setOperand("1") });
-button2.addEventListener('click', function () { display("2"); setOperand("2") });
-button3.addEventListener('click', function () { display("3"); setOperand("3") });
-button4.addEventListener('click', function () { display("4"); setOperand("4") });
-button5.addEventListener('click', function () { display("5"); setOperand("5") });
-button6.addEventListener('click', function () { display("6"); setOperand("6") });
-button7.addEventListener('click', function () { display("7"); setOperand("7") });
-button8.addEventListener('click', function () { display("8"); setOperand("8") });
-button9.addEventListener('click', function () { display("9"); setOperand("9") });
-clear.addEventListener('click', function () { clearAll(); });
-plus.addEventListener('click', function () { display(" + "); setOperand("+") });
-minus.addEventListener('click', function () { display(" - "); setOperand("-") });
-divide.addEventListener('click', function () { display(" / ");; setOperand("/") });
-multiply.addEventListener('click', function () { display(" x "); setOperand("x") });
-equals.addEventListener('click', function () { display(" = "); setOperand("=") });
+let form = document.createElement("form");////
 
+editSection.appendChild(submitButton);
+submitButton.classList.toggle("invisible");
+submitButton.innerHTML = "Add Book";
+submitButton.style.order = 3;
 
-clear.classList.add("clear");
-plus.classList.add("operator");
-minus.classList.add("operator");
-divide.classList.add("operator");
-multiply.classList.add("operator");
-equals.classList.add("equals");
+let myLibrary = [];
 
-
-let displayValue = 0;
-
-let operand1 = "";
-let operand2 = "";
-let operators = [];
-let result = 0;
 let count = 0;
-let firstTime = true;
 
-let operatorCount = 0;
-let operatorPresent = false;
+readInput.classList.toggle("input,input[type='radio'][value='Unread']");
 
+// Constructor for Book Objects
+function Book(title, author, numPages, read) {
+    this.title = title;
+    this.author = author;
+    this.numPages = numPages;
+    this.read = read;
 
+    this.info = function () {
 
-display(0);
-
-function setOperand(input) {
-
-    // set the initial operand
-    if (firstTime == true && Number.isInteger(parseInt(input))) {
-        operand1 += input;
-        setError();
-        
-    }
-
-    // set the initital operator
-    if ((input == "+" || input == "-" || input == "/" || input == "x") && firstTime == true && (operand1 != "")) {
-        
-        operators[count] = input;
-        firstTime = false;
-        count++;
-        operatorCount++;
-        operatorPresent = true;
-        
-    }
-
-    else if ((input == "+" || input == "-" || input == "/" || input == "x") && firstTime == false && (operand1 != "")) {
-        
-        operators[count] = input;
-        count++;
-        operatorCount++;
-        
-    }
-    else if ((input == "+" || input == "-" || input == "/" || input == "x") && firstTime == false && (operand1 == 0 )) {
-        
-            operators[count] = input;
-            count++;
-            operatorCount++;
-            
-    }
-
-    else if (operatorCount > 0 && (input != "+" && input != "-" && input != "/" && input != "x" && input != "=" && operand1 != "") && Number.isInteger(parseInt(input))) {
-        
-        operand2 += input;
-        
-    }
-   
-    else if (((operatorPresent == true) && (operatorCount == 0) && (input != "+") && (input != "-") && (input != "/") && (input != "x") && (input != "="))){ //&& (operand1 != ""))) {
-        
-        operand2 += input;
-        
-        
-
-    } 
-    else if (((operatorPresent == true) && (operatorCount == 1) && (input != "+") && (input != "-") && (input != "/") && (input != "x") && (input != "="))){ //&& (operand1 != ""))) {
-        operand2 += input;
-        
-
-    } 
-
-    // Operate if user inputs an '=' sign
-    if (input == "=") {
-
-        if(operators[0]==undefined){
-            clearAll();
-            return;
-        }
-
-        else if (operand1 != 0 && (operand1 == "" || operand2 == "")) {
-            clearAll();
-            return;
-        }
-
-        result = operate(operand1, operand2, operators[count - 1]);
-        operand1 = result;
-        displayEquals(result);
-
-        
-    }
-   
-
-    // Operate if user puts a second operator
-    if ((input == "+" || input == "-" || input == "/" || input == "x") && operand2 != "" && operators[count - 1] != undefined) {
-        result = operate(operand1, operand2, operators[count - 2]);
-        operand1 = result;
+        let output = "Title: " + this.title + "\n" +
+            "Author: " + this.author + "\n" +
+            "Pages: " + this.numPages + "\n" +
+            "Status: " + this.read;
+        return output;
 
     }
+
 
 }
 
-function clearAll() {
+// Function to add book to library
+function addBookToLibrary(title, author, pages, read) {
 
-    displayValue = 0;
-    operand1 = "";
-    operand2 = "";
-    operators = [];
-    result = 0;
-    count = 0;
-    firstTime = true;
-    display("clear");
-    operatorPresent = false;
-    operatorCount = 0;
-    setError();
+    // Add book object to the end of the array
+    myLibrary.push(new Book(title, author, pages, read));
 
-}
-
-function reset() {
-
-    operatorCount = 0;
-    operand2 = "";
-    result = 0;
+    // Create boxes to hold books
+    createBookBox();
     
 
 }
 
-function setError(){
+// Create book boxes and append to books div
+function createBookBox(){
 
-    errorDialogText.innerHTML = "";
+    let box = document.createElement("div");
+    bookSection.appendChild(box);
+    box.classList.add("boxes")
+    box.setAttribute("data-number", count);
+    box.innerText = (myLibrary[count].info())
+    //count++;
+
+    let buttonContainer = document.createElement("div");
+    box.appendChild(buttonContainer);
+    buttonContainer.classList.add("buttonContainer");
+
+    // Just need to add remove button
+    let deleteButton = document.createElement("button");
+    deleteButton.classList.add("deleteButton");
+    deleteButton.innerText = "Remove";
+    buttonContainer.appendChild(deleteButton);
+    deleteButton.addEventListener('click', function () { bookSection.removeChild(box) });
+
+    let readStatusButton = document.createElement("button");
+    readStatusButton.classList.add("changeStatus");
+    readStatusButton.innerText = "Change Read Status";
+    buttonContainer.appendChild(readStatusButton);
+
+    
+    readStatusButton.addEventListener('click', function () { myLibrary[parseInt(box.dataset.number)].read = "Unread"; box.innerText = myLibrary[parseInt(box.dataset.number)].info();
+    });
+    //myLibrary[count].read = "kill"
+    count++;
+    
     
 }
 
-function operate(operand1, operand2, operators) {
+//*Needs Implemented **
+function removeBook(number) {
 
+    number = parseInt(number);
 
-    console.log("After Operator: " + operators);
-    console.log("After Op1: " + operand1);
-    console.log("After Op2: " + operand2);
-
-    let x = parseFloat(operand1);
-    let y = parseFloat(operand2);
-    let z = operators;
-
-    reset();
-
-    if (z == "+") {
-
-        return (sum(x, y));
-    }
-    if (z == "-") {
-
-        if(operand1 - operand2 == 0){
-            clearAll();
-        }
-
-        return (subtract(x, y));
-    }
-    if (z == "/") {
-        if (y == 0) {
-            clearAll();
-            errorDialogText.innerText = "Why would you do that to me? I thought we were friends."
-            return 0;
-        }
-        else {
-
-            return (division(x, y));
-        }
-    }
-    if (z == "x") {
-
-        return (multiplication(x, y));
-    }
-}
-
-// Set display value based on user's button presses
-function display(inputValue) {
- 
-    if((inputValue == " + " || inputValue == " - " ||inputValue == " / " || inputValue == " x ") && (operand1 == "")&& firstTime == true){
-        return 0;
-    }
-
-    if (inputValue == "clear") {
-        displayValue = 0;
-        inputValue = 0;
-    }
-    else if (displayValue == 0) {
-        displayValue = inputValue;
-
-    }
-    else if (displayValue == 0 && operand1 == 0) {
-        displayValue += inputValue;
-
-    }
-    else if (displayValue == 0 && operand1 != "") {
-        displayValue += inputValue;
+    myLibrary.splice(number, number+1);
+    
     }
     
-   
-    
-    // case if operand2 is blank and user input is zero
-    else if(operand2 == "" && inputValue == 0){
-        return;
-    }
 
-    else {
-        displayValue += inputValue;
-    }
+// Bring up a form when the add book button is pressed
+function createForm() {
 
 
-    displayContainer.innerText = (displayValue)
+
+    editSection.appendChild(form);///////
+    form.classList.add("form");
+
+    //Begin
+    let label1 = document.createElement("label");
+    form.appendChild(label1);
+
+    label1.setAttribute("for", "title"); //* update id
+    label1.innerHTML = "Book Title:"
+
+    let titleInput = document.createElement("input");
+    form.appendChild(titleInput);
+    titleInput.setAttribute("type", "text");
+    titleInput.setAttribute("id", "title"); ///* update id
+    titleInput.setAttribute("name", "title");
+    titleInput.setAttribute("value", "");
+    //End
+
+
+    //Begin
+    let label2 = document.createElement("label");
+    form.appendChild(label2);
+
+    label2.setAttribute("for", "author");
+    label2.innerHTML = "Book Author:"
+
+    let authorInput = document.createElement("input");
+    form.appendChild(authorInput);
+    authorInput.setAttribute("type", "text");
+    authorInput.setAttribute("id", "author");
+    authorInput.setAttribute("name", "author");
+    authorInput.setAttribute("value", "");
+    //End
+
+
+    //Begin
+    let label3 = document.createElement("label");
+    form.appendChild(label3);
+
+    label3.setAttribute("for", "pages");
+    label3.innerHTML = "Number of Pages:"
+
+
+    form.appendChild(pageInput);
+    pageInput.setAttribute("type", "text");
+    pageInput.setAttribute("id", "pages");
+    pageInput.setAttribute("name", "pages");
+    pageInput.setAttribute("value", "");
+    //End
+
+
+    //Begin
+    let readOption = document.createElement("label");
+    form.appendChild(readOption);
+
+    readOption.setAttribute("for", "read");
+    readOption.innerHTML = "Read Status";
+
+    form.appendChild(readInput);
+    readInput.setAttribute("type", "text");
+    readInput.setAttribute("id", "read");
+    readInput.setAttribute("name", "read");
+    readInput.setAttribute("value", "")
+    //End
+
+
+
+    //Begin
+    submitButton.addEventListener('click', function () { // Submit the book to be added
+        addBookToLibrary((document.getElementById("title").value),
+            document.getElementById("author").value,
+            document.getElementById("pages").value,
+            document.getElementById("read").value);
+        submitButton.classList.toggle("invisible");
+        readInput.classList.toggle("input,input[type='radio'][value='Unread']");
+        
+        
+        //uncheck();
+        form.classList.toggle("invisible"); // keep
+
+    })
+    //End
+
+
 }
 
-function displayEquals(inputValue) {
 
-    displayValue = result;
-    displayContainer.innerText = (inputValue)
 
-}
+// Create a new book entry
+addButton.addEventListener('click', function () { form.classList.toggle("invisible"); submitButton.classList.toggle("invisible"); });
 
-// Sum funtion
-function sum(operand1, operand2) {
+form.classList.toggle("invisible")
+createForm();
 
-    return operand1 + operand2;
+//addButton.addEventListener('click', function () { createForm(); editSection.removeChild(form)});
 
-}
-function subtract(operand1, operand2) {
+//viewButton.addEventListener('click', function() { clearDisplay(); myLibrary.forEach(display); })
 
-    return operand1 - operand2;
+// call the addtolibrary function to add a book to the library
+addBookToLibrary("The Hail Mary", "Andy Weir", 497, "not read yet");
+addBookToLibrary("The House in the Cerulean Sea", "TJ Klune", 393, "not read yet");
+addBookToLibrary("A Storm of Swords", "George R.R. Martin", 1008, "not read yet");
 
-}
-function division(operand1, operand2) {
 
-    return operand1 / operand2;
-
-}
-function multiplication(operand1, operand2) {
-
-    return operand1 * operand2;
-
-}
-
-function functionality() {
-    alert("Button functionality has not yet been added.")
-}
