@@ -1,31 +1,38 @@
 
 
 const addButton = document.getElementById("addButton")
-
-
 const editSection = document.getElementById("editSection");
 const bookSection = document.getElementById("books");
+const form = document.createElement("form");
 
 let unreadInput = document.createElement("input");
 let readInput = document.createElement("input");
 let pageInput = document.createElement("input");
+let myLibrary = [];
+let count = 0;
+
+
 let submitButton = document.createElement("button");
-
-let form = document.createElement("form");////
-
 editSection.appendChild(submitButton);
 submitButton.classList.toggle("invisible");
 submitButton.innerHTML = "Add Book";
 submitButton.style.order = 3;
 
-let myLibrary = [];
+form.classList.toggle("invisible")
+createForm();
 
-let count = 0;
+// Toggles the entry form to its active state upon clicking the add book button
+addButton.addEventListener('click', function () { form.classList.toggle("invisible"); submitButton.classList.toggle("invisible"); });
 
-readInput.classList.toggle("input,input[type='radio'][value='Unread']");
+
+// call the addtolibrary function to add starter books to the library
+addBookToLibrary("The Hail Mary", "Andy Weir", 497, "Read");
+addBookToLibrary("The House in the Cerulean Sea", "TJ Klune", 393, "Unread");
+addBookToLibrary("A Storm of Swords", "George R.R. Martin", 1008, "Read");
 
 // Constructor for Book Objects
 function Book(title, author, numPages, read) {
+
     this.title = title;
     this.author = author;
     this.numPages = numPages;
@@ -44,70 +51,103 @@ function Book(title, author, numPages, read) {
 
 }
 
+// Event listener changes value of new book button to canel on click
+addButton.addEventListener("click", ()=>{
+
+    if(addButton.innerText == "New Book")
+    addButton.innerText = "cancel";
+
+    else if(addButton.innerText == "cancel"){
+        addButton.innerText = "New Book"
+    }
+});
+
+
+
+
 // Function to add book to library
 function addBookToLibrary(title, author, pages, read) {
 
-    // Add book object to the end of the array
-    myLibrary.push(new Book(title, author, pages, read));
+    read = read.toUpperCase();
 
-    // Create boxes to hold books
-    createBookBox();
-    
+    if (title == "" || author == "" || pages == "" || read == "") {
+
+        alert("Please fill in all fields.\n\nRead Status must be 'Read' or 'Unread'")
+        form.classList.toggle("invisible")
+        submitButton.classList.toggle("invisible");
+    }
+    else {
+        // Add book object to the end of the array
+        myLibrary.push(new Book(title, author, pages, read));
+
+        // Create boxes to hold books
+        createBookBox();
+    }
+
 
 }
 
 // Create book boxes and append to books div
-function createBookBox(){
+function createBookBox() {
 
     let box = document.createElement("div");
     bookSection.appendChild(box);
     box.classList.add("boxes")
     box.setAttribute("data-number", count);
     box.innerText = (myLibrary[count].info())
-    //count++;
 
     let buttonContainer = document.createElement("div");
     box.appendChild(buttonContainer);
     buttonContainer.classList.add("buttonContainer");
 
-    // Just need to add remove button
+    // add remove button
     let deleteButton = document.createElement("button");
     deleteButton.classList.add("deleteButton");
     deleteButton.innerText = "Remove";
     buttonContainer.appendChild(deleteButton);
     deleteButton.addEventListener('click', function () { bookSection.removeChild(box) });
 
+    // add read status button
     let readStatusButton = document.createElement("button");
     readStatusButton.classList.add("changeStatus");
     readStatusButton.innerText = "Change Read Status";
     buttonContainer.appendChild(readStatusButton);
 
-    
-    readStatusButton.addEventListener('click', function () { myLibrary[parseInt(box.dataset.number)].read = "Unread"; box.innerText = myLibrary[parseInt(box.dataset.number)].info();
+    // add event listener. * still need to get it working with multiple clicks*
+    readStatusButton.addEventListener('click', function () {
+
+        changeStatus(box.dataset.number);
+
+        box.innerText = myLibrary[parseInt(box.dataset.number)].info();
+
+        let buttonContainer = document.createElement("div");
+        box.appendChild(buttonContainer);
+        buttonContainer.classList.add("buttonContainer");
+
+        // Just need to add remove button
+        let deleteButton = document.createElement("button");
+        deleteButton.classList.add("deleteButton");
+        deleteButton.innerText = "Remove";
+        buttonContainer.appendChild(deleteButton);
+        deleteButton.addEventListener('click', function () { bookSection.removeChild(box) });
+
+        let readStatusButton = document.createElement("button");
+        readStatusButton.classList.add("changeStatus");
+        readStatusButton.innerText = "Change Read Status";
+        buttonContainer.appendChild(readStatusButton);
+
     });
-    //myLibrary[count].read = "kill"
+    
     count++;
-    
-    
+
 }
-
-//*Needs Implemented **
-function removeBook(number) {
-
-    number = parseInt(number);
-
-    myLibrary.splice(number, number+1);
-    
-    }
-    
 
 // Bring up a form when the add book button is pressed
 function createForm() {
 
-
-
     editSection.appendChild(form);///////
     form.classList.add("form");
+
 
     //Begin
     let label1 = document.createElement("label");
@@ -172,7 +212,6 @@ function createForm() {
     //End
 
 
-
     //Begin
     submitButton.addEventListener('click', function () { // Submit the book to be added
         addBookToLibrary((document.getElementById("title").value),
@@ -181,32 +220,36 @@ function createForm() {
             document.getElementById("read").value);
         submitButton.classList.toggle("invisible");
         readInput.classList.toggle("input,input[type='radio'][value='Unread']");
-        
-        
+        clearFields();
+
         //uncheck();
         form.classList.toggle("invisible"); // keep
 
     })
     //End
 
+}
+
+function clearFields() {
+    document.getElementById("title").value = "";
+    document.getElementById("author").value = "";
+    document.getElementById("pages").value = "";
+    document.getElementById("read").value = "";
+}
+
+function changeStatus(number) {
+    if (myLibrary[parseInt(number)].read == "UNREAD") {
+        myLibrary[parseInt(number)].read = "READ"
+    }
+
+    else if (myLibrary[parseInt(number)].read == "READ") {
+        myLibrary[parseInt(number)].read = "UNREAD"
+    };
 
 }
 
 
 
-// Create a new book entry
-addButton.addEventListener('click', function () { form.classList.toggle("invisible"); submitButton.classList.toggle("invisible"); });
 
-form.classList.toggle("invisible")
-createForm();
-
-//addButton.addEventListener('click', function () { createForm(); editSection.removeChild(form)});
-
-//viewButton.addEventListener('click', function() { clearDisplay(); myLibrary.forEach(display); })
-
-// call the addtolibrary function to add a book to the library
-addBookToLibrary("The Hail Mary", "Andy Weir", 497, "not read yet");
-addBookToLibrary("The House in the Cerulean Sea", "TJ Klune", 393, "not read yet");
-addBookToLibrary("A Storm of Swords", "George R.R. Martin", 1008, "not read yet");
 
 

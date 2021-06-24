@@ -51,7 +51,7 @@ button:hover{
     display: flex;
     flex-direction: row;
     border-style: solid;
-    border-radius: 30px;
+    border-radius: 10px;
     margin-bottom: 50px;
 }
 
