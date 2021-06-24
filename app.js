@@ -68,6 +68,7 @@ function setOperand(input) {
     // set the initial operand
     if (firstTime == true && Number.isInteger(parseInt(input))) {
         operand1 += input;
+        setError();
         
     }
 
@@ -196,11 +197,16 @@ function operate(operand1, operand2, operators) {
     }
     if (z == "-") {
 
+        if(operand1 - operand2 == 0){
+            clearAll();
+        }
+
         return (subtract(x, y));
     }
     if (z == "/") {
         if (y == 0) {
-            errorDialogText.innerHTML = "Why would you do that to me? I thought we were friends."
+            clearAll();
+            errorDialogText.innerText = "Why would you do that to me? I thought we were friends."
             return 0;
         }
         else {
